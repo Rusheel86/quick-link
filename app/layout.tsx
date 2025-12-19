@@ -27,14 +27,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google AdSense Integration */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9215034208801607"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-      </head>
+  {/* Google AdSense Integration - Using 'beforeInteractive' so Google finds it instantly */}
+  <Script
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9215034208801607"
+    crossOrigin="anonymous"
+    strategy="beforeInteractive" 
+  />
+</head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300`}
       >
