@@ -7,7 +7,8 @@ https://quick-links-teal.vercel.app/
 
 ## 🚀 Features
 - **Instant Generation:** Create a live link in under 30 seconds.
-- **Three Core Templates:** - 🛍️ **Marketplace:** For selling products with price tags.
+- **Three Core Templates:**
+-  🛍️ **Marketplace:** For selling products with price tags.
   - 🖼️ **Minimal:** A clean gallery for photographers/creators.
   - 📖 **Story:** Vertical layout for immersive viewing.
 - **QR Code Engine:** Automatic high-resolution QR codes for physical sharing.
