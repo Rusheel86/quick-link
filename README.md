@@ -1,52 +1,77 @@
 # ⚡ Quick-Link 
-https://quick-links-teal.vercel.app/
+[![Live Demo](https://img.shields.io/badge/demo-live-green?style=for-the-badge)](https://quick-links-teal.vercel.app/)
+[![Next.js 15](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-blue?style=for-the-badge&logo=supabase)](https://supabase.com/)
 
-**Quick-Link** is a high-speed portfolio and marketplace link generator designed for creators and sellers. Generate beautiful, mobile-optimized landing pages in seconds with built-in QR code support.
+**Quick-Link** is a high-speed marketplace and portfolio engine. Create professional, mobile-optimized landing pages with integrated AdSense revenue and QR code support in under 60 seconds.
 
+---
 
+## 🌟 Key Features
 
-## 🚀 Features
-- **Instant Generation:** Create a live link in under 30 seconds.
-- **Three Core Templates:**
--  🛍️ **Marketplace:** For selling products with price tags.
-  - 🖼️ **Minimal:** A clean gallery for photographers/creators.
-  - 📖 **Story:** Vertical layout for immersive viewing.
-- **QR Code Engine:** Automatic high-resolution QR codes for physical sharing.
-- **Tiered System:** - **Free:** Ad-supported links with a 5-photo limit.
-  - **Pro (₹499):** Ad-free experience with up to 10 high-res photos and "Sold/Inactive" status toggles.
+* **⚡ Instant Generation:** Go from zero to a live link in seconds.
+* **📱 Mobile-First Design:** Optimized for WhatsApp sharing and social media browsing.
+* **🖼️ Professional Templates:**
+    * 🛍️ **Marketplace:** Clean product listings with price tags and WhatsApp CTAs.
+    * 🖼️ **Minimal:** A sleek gallery for creators and photographers.
+    * 📖 **Story:** Vertical, immersive layout for high-impact viewing.
+* **🏁 QR Code Engine:** Automated QR generation for every link—perfect for physical product tags.
+* **💰 AdSense Integration:** Built-in ad slots for Free tier users to monetize traffic automatically.
+* **💎 Tiered Ecosystem:**
+    * **Free:** Ad-supported, 5-photo limit, standard SEO.
+    * **Pro (₹499):** Ad-free, 10 high-res photos, "Sold/Inactive" status toggles, and premium analytics.
+
+---
 
 ## 🛠️ Tech Stack
-- **Framework:** [Next.js 14](https://nextjs.org/) (App Router)
-- **Database:** [Supabase](https://supabase.com/)
-- **Payments:** [Razorpay India](https://razorpay.com/)
-- **Image Hosting:** [Cloudinary](https://cloudinary.com/)
-- **Styling:** Tailwind CSS (Dark/Light Mode support)
 
-## 📦 Installation & Setup
+| Layer | Technology |
+| :--- | :--- |
+| **Framework** | [Next.js 15 (App Router)](https://nextjs.org/) |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/) (Full Dark/Light Support) |
+| **Database** | [Supabase](https://supabase.com/) (PostgreSQL + Auth) |
+| **Storage** | [Cloudinary](https://cloudinary.com/) (CDN-optimized images) |
+| **Payments** | [Razorpay India](https://razorpay.com/) |
+| **Monetization** | [Google AdSense](https://adsense.google.com/) |
 
-1. **Clone the repo:**
-   ```bash
-   git clone [https://github.com/Rusheel86/quick-link.git](https://github.com/Rusheel86/quick-link.git)
-   cd quick-link
+---
+
+## 📂 Project Structure
+
+```text
+├── app/
+│   ├── view/[id]/     # Dynamic product viewing routes (Next.js 15)
+│   ├── layout.tsx     # Global AdSense & Meta configuration
+│   └── page.tsx       # Link generation dashboard
+├── lib/
+│   └── supabase.js    # Database client configuration
+└── public/            # Static assets and icons
+🚀 Local Installation & Setup
+Clone the repo:
+
+Bash
+
+git clone [https://github.com/Rusheel86/quick-link.git](https://github.com/Rusheel86/quick-link.git)
+cd quick-link
 Install dependencies:
 
 Bash
 
 npm install
-Environment Variables: Create a .env.local file and add your credentials:
+Configure Environment Variables: Create a .env.local file:
 
 Code snippet
 
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
-Run Development Server:
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_name
+Launch:
 
 Bash
 
 npm run dev
-📜 Legal & Compliance
-This project is built to comply with Indian payment gateway regulations. You can find the mandatory legal pages here:
+⚖️ Legal & Compliance
+This project is built to comply with Indian digital regulations and payment gateway requirements.
 
 Privacy Policy
 
@@ -54,7 +79,7 @@ Terms & Conditions
 
 Refund Policy
 
-Contact Us
-
 🤝 Support
-For support or inquiries, please visit our Contact Page or email rusheelhere@gmail.com
+Created by Rusheel. 
+LinkedIn : https://www.linkedin.com/in/rusheel-sharma/
+For inquiries or support, please reach out via: 📧 Email: rusheelhere@gmail.com 🌐 Website: Quick-Link Live
