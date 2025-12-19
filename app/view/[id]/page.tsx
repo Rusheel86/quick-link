@@ -71,7 +71,7 @@ export default async function ViewLink({ params }: { params: { id: string } }) {
           <div className="py-6 border-y border-slate-200 dark:border-slate-800 text-center">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Advertisement</p>
             
-            <div className="min-h-[100px] flex items-center justify-center bg-slate-100 dark:bg-slate-900/50 rounded-xl overflow-hidden">
+            <div className="min-h-24 flex items-center justify-center bg-slate-100 dark:bg-slate-900/50 rounded-xl overflow-hidden">
                {/* Your Horizontal Ad Unit */}
                <ins className="adsbygoogle"
                     style={{ display: 'block' }}
