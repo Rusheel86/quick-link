@@ -1,167 +1,143 @@
-import { supabase } from '../../../lib/supabase';
-import { notFound } from 'next/navigation';
+import { supabase } from '@/lib/supabase'
+import { notFound } from 'next/navigation'
+import Script from 'next/script'
 
-export default async function ViewLink({ params }: { params: { id: string } }) {
-  const { id } = await params;
-
-  // 1. Track Views
-  await supabase.rpc('increment_views', { target_id: id });
-
-  // 2. Fetch Link Data
-  const { data: link, error } = await supabase
+// Fetch data from Supabase
+async function getLinkData(id: string) {
+  const { data, error } = await supabase
     .from('links')
     .select('*')
     .eq('id', id)
-    .single();
+    .single()
 
-  if (error || !link) return notFound();
+  if (error || !data) return null
+  return data
+}
 
-  // 3. Expiry Check
-  const now = new Date();
-  const expiry = new Date(link.expires_at);
-  if (now > expiry) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-white text-center">
-        <h1 className="text-6xl mb-4">⌛</h1>
-        <h1 className="text-2xl font-bold text-slate-800">Link Expired</h1>
-        <a href="/" className="mt-8 text-blue-600 font-bold underline">Create New</a>
-      </main>
-    );
-  }
+export default async function ViewLink({ params }: { params: { id: string } }) {
+  const data = await getLinkData(params.id)
 
-  // 4. SMART AD COMPONENT (Detects PRO Status)
-  const AdSlot = ({ type = "horizontal" }: { type?: "horizontal" | "overlay" }) => {
-    // If link is PRO, do not render anything
-    if (link.is_pro) return null;
+  if (!data) notFound()
 
-    return (
-      <div className={`my-6 w-full p-4 bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl text-center animate-in fade-in duration-700 ${type === 'overlay' ? 'bg-white/10 backdrop-blur-md border-white/20' : ''}`}>
-        <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-2 font-sans">Sponsored</p>
-        <div className="h-20 flex items-center justify-center text-slate-400 italic text-sm font-serif">
-          Advertisement Space
-        </div>
-      </div>
-    );
-  };
-
-  // Sold Stamp Component
-  const SoldStamp = () => (
-    <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-      <div className="border-8 border-red-600 px-6 py-2 text-red-600 text-5xl font-black uppercase tracking-tighter rotate-[-12deg] bg-white/90 shadow-2xl">
-        SOLD
-      </div>
-    </div>
-  );
-
-  const renderTemplate = () => {
-    switch (link.template_type) {
-      case 'minimal': 
-        return (
-          <div className="bg-white min-h-screen py-20 px-6">
-            <div className="max-w-2xl mx-auto text-center">
-              <h1 className="text-4xl font-extralight tracking-widest uppercase mb-2 text-slate-900">{link.title}</h1>
-              
-              <AdSlot /> 
-
-              <div className="space-y-24 mt-16 relative">
-                {link.image_urls.map((url: string, i: number) => (
-                  <div key={i} className="relative group">
-                    <img src={url} alt="" className={`w-full transition-all duration-700 ${link.is_sold ? 'grayscale brightness-75' : 'grayscale hover:grayscale-0'}`} />
-                    {link.is_sold && i === 0 && <SoldStamp />}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'story': 
-        return (
-          <div className="h-screen w-full overflow-y-scroll snap-y snap-mandatory bg-black">
-            {link.image_urls.map((url: string, i: number) => (
-              <div key={i} className="h-screen w-full snap-start relative flex items-center justify-center">
-                <img src={url} alt="" className={`h-full w-full object-cover ${link.is_sold ? 'grayscale' : ''}`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                
-                {link.is_sold && <SoldStamp />}
-                
-                {/* Show Overlay Ad on 2nd slide only for FREE users */}
-                {i === 1 && !link.is_pro && (
-                  <div className="absolute top-20 left-0 w-full px-6">
-                    <AdSlot type="overlay" />
-                  </div>
-                )}
-
-                <div className="absolute bottom-28 left-8 text-white">
-                  <h1 className="text-4xl font-black mb-1">{link.title}</h1>
-                </div>
-              </div>
-            ))}
-          </div>
-        );
-
-      default: 
-        return (
-          <div className="bg-slate-50 min-h-screen pb-40">
-            <div className="max-w-md mx-auto relative">
-              {/* Hero Image */}
-              <div className="aspect-[4/5] w-full relative overflow-hidden">
-                <img src={link.image_urls[0]} alt="" className={`w-full h-full object-cover transition-all ${link.is_sold ? 'grayscale brightness-50' : ''}`} />
-                
-                {link.is_sold && <SoldStamp />}
-
-                {link.price && (
-                  <div className="absolute top-4 right-4 bg-white/95 backdrop-blur px-5 py-2 rounded-full shadow-2xl border border-slate-100">
-                    <span className="font-black text-blue-600 text-lg tracking-tighter">{link.price}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Product Info */}
-              <div className="p-8 space-y-6 bg-white rounded-t-[3rem] -mt-10 relative z-20 shadow-[-20px_0_60px_-15px_rgba(0,0,0,0.1)]">
-                <div className="flex justify-between items-start">
-                  <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-slate-900 leading-tight">{link.title}</h1>
-                    {link.is_pro && (
-                      <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest flex items-center gap-1">
-                        💎 Premium Verified
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-[10px] font-bold bg-slate-100 px-3 py-1 rounded-full text-slate-500 uppercase tracking-widest shrink-0">
-                    👁️ {link.views || 0}
-                  </span>
-                </div>
-
-                <AdSlot />
-
-                <div className="grid grid-cols-2 gap-4 mt-8">
-                  {link.image_urls.slice(1).map((url: string, i: number) => (
-                    <img key={i} src={url} alt="" className={`rounded-3xl aspect-square object-cover shadow-xl border-4 border-white ${link.is_sold ? 'grayscale' : ''}`} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-    }
-  };
+  // SEO Description
+  const shortDesc = data.description?.slice(0, 150) || "Check out this listing on Quick-Link"
 
   return (
-    <main className="relative">
-      {renderTemplate()}
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white pb-32">
+      {/* 1. Header */}
+      <nav className="p-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-2xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">Q</div>
+            <h1 className="font-bold text-lg tracking-tight">Quick-Link</h1>
+          </div>
+          <span className="text-[10px] bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 font-bold px-2 py-1 rounded-full uppercase">
+            Active Listing
+          </span>
+        </div>
+      </nav>
 
-      {/* WhatsApp Button */}
-      {!link.is_sold && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-xs px-4 z-50">
+      <main className="max-w-2xl mx-auto p-4 space-y-6">
+        {/* 2. Product Images */}
+        <div className="space-y-4">
+          {data.images && data.images.map((url: string, index: number) => (
+            <div key={index} className="rounded-3xl overflow-hidden shadow-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <img 
+                src={url} 
+                alt={`${data.title} - view ${index + 1}`} 
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* 3. Pricing and Title Card */}
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <h2 className="text-2xl font-extrabold tracking-tight leading-tight">
+            {data.title || "Untitled Product"}
+          </h2>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-black text-blue-600 dark:text-blue-400">
+              ₹{data.price}
+            </span>
+          </div>
+          <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed whitespace-pre-wrap">
+            {data.description || "No description provided."}
+          </p>
+        </div>
+
+        {/* 4. AD UNIT (Only for Free Tier) */}
+        {data.tier === 'free' && (
+          <div className="py-6 border-y border-slate-200 dark:border-slate-800 text-center">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Advertisement</p>
+            
+            <div className="min-h-[100px] flex items-center justify-center bg-slate-100 dark:bg-slate-900/50 rounded-xl overflow-hidden">
+               {/* Your Horizontal Ad Unit */}
+               <ins className="adsbygoogle"
+                    style={{ display: 'block' }}
+                    data-ad-client="ca-pub-9215034208801607"
+                    data-ad-slot="6421609477"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+               <Script 
+                 id="adsense-unit-push"
+                 strategy="afterInteractive"
+                 dangerouslySetInnerHTML={{ 
+                   __html: '(window.adsbygoogle = window.adsbygoogle || []).push({});' 
+                 }} 
+               />
+            </div>
+          </div>
+        )}
+
+        {/* 5. Seller & Safety Info */}
+        <div className="grid grid-cols-1 gap-4">
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+            <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center font-bold text-blue-500">
+              {data.seller_name?.[0] || 'S'}
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider">Seller</p>
+              <p className="font-bold">{data.seller_name || "Private Seller"}</p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30">
+            <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">
+              💡 <strong>Safety Tip:</strong> Always meet in public places and inspect the item before paying the seller.
+            </p>
+          </div>
+        </div>
+
+        {/* 6. Footer Links */}
+        <footer className="pt-8 pb-4 text-center space-y-4">
+          <p className="text-xs text-slate-500">Powered by Quick-Link &bull; Verified 2025</p>
+          <div className="flex justify-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <a href="/privacy-policy">Privacy</a>
+            <span>&bull;</span>
+            <a href="/terms">Terms</a>
+            <span>&bull;</span>
+            <button className="text-red-400">Report Listing</button>
+          </div>
+        </footer>
+      </main>
+
+      {/* 7. Sticky Contact Bar */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 z-50">
+        <div className="max-w-2xl mx-auto flex items-center gap-4">
+          <div className="hidden sm:block">
+            <p className="text-xs text-slate-500 font-bold uppercase">Price</p>
+            <p className="text-xl font-black">₹{data.price}</p>
+          </div>
           <a 
-            href={`https://wa.me/?text=Hi! I am interested in "${link.title}"`}
-            className="flex items-center justify-center gap-3 bg-[#25D366] text-white py-4 rounded-full font-black shadow-2xl hover:scale-105 transition-transform active:scale-95"
+            href={`https://wa.me/${data.phone}?text=${encodeURIComponent(`Hi, I saw your listing "${data.title}" on Quick-Link. Is it still available?`)}`}
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl text-center shadow-lg shadow-green-600/20 transition-all active:scale-95 flex items-center justify-center gap-2"
           >
-            <span className="text-xl">💬</span> Message Seller
+            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+            Contact Seller
           </a>
         </div>
-      )}
-    </main>
-  );
+      </div>
+    </div>
+  )
 }
