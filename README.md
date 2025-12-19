@@ -1,4 +1,5 @@
 # ⚡ Quick-Link 
+https://quick-links-teal.vercel.app/
 
 **Quick-Link** is a high-speed portfolio and marketplace link generator designed for creators and sellers. Generate beautiful, mobile-optimized landing pages in seconds with built-in QR code support.
 
