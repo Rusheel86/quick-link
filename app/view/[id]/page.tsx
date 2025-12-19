@@ -2,10 +2,19 @@ import { supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic';
 
-export default async function DebugPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+// Notice we added 'Promise' type to params
+export default async function DebugPage({ params }: { params: Promise<{ id: string }> }) {
+  
+  // 1. You MUST await params in Next.js 15
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
 
-  // Attempt to fetch
+  // 2. Safety check
+  if (!id) {
+    return <div>Error: No ID found in URL.</div>
+  }
+
+  // 3. Now attempt to fetch
   const { data, error } = await supabase
     .from('links')
     .select('*')
@@ -21,7 +30,6 @@ export default async function DebugPage({ params }: { params: { id: string } }) 
         <div style={{ color: 'red', border: '1px solid red', padding: '10px' }}>
           <h3>Supabase Error:</h3>
           <p>{error.message}</p>
-          <p>Check if your table name is 'links' and 'id' is a column.</p>
         </div>
       )}
 
