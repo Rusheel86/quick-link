@@ -47,8 +47,10 @@
 │   └── supabase.js    # Database client configuration
 └── public/            # Static assets and icons
 🚀 Local Installation & Setup
-Clone the repo:
 
+```
+Clone the repo:
+```
 Bash
 
 git clone [https://github.com/Rusheel86/quick-link.git](https://github.com/Rusheel86/quick-link.git)
@@ -72,7 +74,7 @@ Bash
 npm run dev
 ⚖️ Legal & Compliance
 This project is built to comply with Indian digital regulations and payment gateway requirements.
-
+```
 Privacy Policy
 
 Terms & Conditions
